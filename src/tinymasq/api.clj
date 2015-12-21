@@ -12,19 +12,17 @@
 (ns tinymasq.api
   "Add/Remove hosts"
   (:require
-    [tinymasq.config :refer (users)]
-    [clojure.core.strint :refer (<<)]
-    [taoensso.timbre :as timbre :refer (refer-timbre)]
-    [tinymasq.store :refer (update-host del-host get-host)]
-    [compojure.core :refer (defroutes routes)]
-    [ring.middleware.ssl :refer (wrap-ssl-redirect)]
-    [ring.middleware.format :refer (wrap-restful-format)]
-    [compojure.core :refer (GET POST PUT DELETE)]
-    [cemerick.friend :as friend]
-    (cemerick.friend [workflows :as workflows]
-                     [credentials :as creds])
-    )
-  )
+   [tinymasq.config :refer (users)]
+   [clojure.core.strint :refer (<<)]
+   [taoensso.timbre :as timbre :refer (refer-timbre)]
+   [tinymasq.store :refer (update-host del-host get-host)]
+   [compojure.core :refer (defroutes routes)]
+   [ring.middleware.ssl :refer (wrap-ssl-redirect)]
+   [ring.middleware.format :refer (wrap-restful-format)]
+   [compojure.core :refer (GET POST PUT DELETE)]
+   [cemerick.friend :as friend]
+   (cemerick.friend [workflows :as workflows]
+                    [credentials :as creds])))
 
 (refer-timbre)
 
@@ -40,25 +38,15 @@
 
 
 (defroutes hosts
-  (POST "/hosts" {{hostname :hostname ip :ip} :params}
-  ;  (add-host hostname ip)
-    (trace "adding" hostname "->" ip)
-    {:status 200 :body "host added"})
-  (PUT "/hosts" {{hostname :hostname ip :ip} :params}
-    (update-host hostname ip)
-    (trace "updating" hostname "->" ip)
-    {:status 200 :body "host updated"})
-  (DELETE "/hosts" {{hostname :hostname} :params}
-    (trace "clearing" hostname)
-    (del-host hostname)
-    {:status 200 :body "host removed"})
-  (GET "/hosts" {{hostname :hostname} :params}
-    (trace "query" hostname)
-    (if-let [ip (get-host hostname)]
-      {:status 200 :body {:ip ip}}
-      {:status 404 :body "hostname not found"}
-      ))
-  )
+  (GET "/nic/update" {{host :host myip :myip description :description}
+                        :params}
+       (trace "update" host myip description)
+     ;  (update-host auth host myip description)
+       {:status 200
+        :body "i hear you"})
+
+  (GET "/services"
+       {:status 200 :body "perhaps"}))
 
 (def user #{::user})
 (def admin #{::admin})
@@ -66,21 +54,21 @@
 (derive ::admin ::user)
 
 (defn sign-in-resp
-   [req]
-   {:status 401 :body "not valid creds"})
+  [req]
+  {:status 401 :body "not valid creds"})
 
 (defn secured-app [routes]
   (friend/authenticate
-    (friend/wrap-authorize routes user)
-    {:allow-anon? false
-     :credential-fn (partial creds/bcrypt-credential-fn users)
-     :unauthenticated-handler sign-in-resp
-     :workflows [(workflows/http-basic :realm "basic-tinymasq")]}))
+   (friend/wrap-authorize routes user)
+   {:allow-anon? false
+    :credential-fn (partial creds/bcrypt-credential-fn users)
+    :unauthenticated-handler sign-in-resp
+    :workflows [(workflows/http-basic :realm "basic-tinymasq")]}))
 
 (defn app []
   (-> (routes hosts)
-    (secured-app)
-    (wrap-ssl-redirect :ssl-port 8444)
-    (wrap-restful-format :formats [:json-kw :edn :yaml-kw :yaml-in-html])
-    (error-wrap)
-    ))
+    ;  (secured-app)
+      (wrap-ssl-redirect :ssl-port 8444)
+      (wrap-restful-format :formats [:json-kw :edn :yaml-kw :yaml-in-html])
+      (error-wrap)
+      ))
