@@ -12,7 +12,7 @@ GET /nic/update?host=<yourhostname>&myip=<ipaddress>[&description=<ServiceDescri
 ```
 * host := the name of the host to register/update
 * myip := the IP address to register
-* description := an optional text describing the service
+* description := an optional text describing the service. Use URL encoding.
 
 ## Authentication and Authorisation
 Authentication is done through HTTP BASIC auth or by providing username/password with the URL.
