@@ -14,6 +14,7 @@
   (:require
    [tinymasq.config :refer (users)]
    [clojure.core.strint :refer (<<)]
+   [clojure.pprint :refer (pprint)]
    [taoensso.timbre :as timbre :refer (refer-timbre)]
    [tinymasq.store :refer (update-host del-host get-host)]
    [compojure.core :refer (defroutes routes)]
@@ -44,9 +45,10 @@
      ;  (update-host auth host myip description)
        {:status 200
         :body "i hear you"})
-
-  (GET "/services"
-       {:status 200 :body "perhaps"}))
+  (GET "/services" {}
+       (trace "services")
+       {:status 200
+        :body "perhaps"}))
 
 (def user #{::user})
 (def admin #{::admin})
@@ -57,18 +59,20 @@
   [req]
   {:status 401 :body "not valid creds"})
 
+(defn- fdyn-credential-fn [workflow]
+  (trace "fdyn crds")
+  (pprint workflow))
+
 (defn secured-app [routes]
   (friend/authenticate
    (friend/wrap-authorize routes user)
-   {:allow-anon? false
-    :credential-fn (partial creds/bcrypt-credential-fn users)
+   {:allow-anon? true
+    :credential-fn  fdyn-credential-fn
     :unauthenticated-handler sign-in-resp
-    :workflows [(workflows/http-basic :realm "basic-tinymasq")]}))
+    :workflows [(workflows/http-basic :realm "basic-fdyn")]}))
 
 (defn app []
   (-> (routes hosts)
-    ;  (secured-app)
-      (wrap-ssl-redirect :ssl-port 8444)
+       (secured-app)
       (wrap-restful-format :formats [:json-kw :edn :yaml-kw :yaml-in-html])
-      (error-wrap)
-      ))
+      (error-wrap)))

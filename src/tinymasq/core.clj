@@ -4,7 +4,6 @@
   (:require
    [clojure.string :refer (split)]
    [ring.adapter.jetty :refer (run-jetty)]
-   [tinymasq.ssl :refer (generate-store)]
    [tinymasq.api :refer (app)]
    [taoensso.timbre :as timbre :refer (refer-timbre)]
    [clojure.core.async :refer (thread go >! >!! <!! <! alts! dropping-buffer go-loop chan)]
@@ -85,12 +84,6 @@
        (.send @udp-server pkt)
        (trace "Query result for" host "is" ip)))))
 
-(defn default-key
-  "Generates a default keystore if missing"
-  []
-  (when-not (.exists (file (ssl-conf :keystore)))
-    (info "generating a default keystore")
-    (generate-store (ssl-conf :keystore) (ssl-conf :password))))
 
 (defn setup-logging
   "Sets up logging configuration"
@@ -100,19 +93,14 @@
   (timbre/set-level! (log-conf :level)))
 
 
-
 (defn -main [& args]
   (setup-logging)
   (start-udp-server)
-  (default-key)
   (run-jetty (app)
              {:port (tiny-config :http-port)
               :host (tiny-config :bind-address)
               :join? false
-              :ssl? true
-              :keystore (ssl-conf :keystore)
-              :key-password  (ssl-conf :password)
-              :ssl-port 8444})
+              :ssl? false})
   (info "Tinymasq" (:tinymasq-version env) "is running")
   (reply-loop)
   (process-loop)

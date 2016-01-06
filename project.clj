@@ -1,4 +1,4 @@
-(defproject tinymasq "0.1.2-ffms-2"
+(defproject tinymasq "0.1.2-ffms-3"
   :description "A DynDNS server for local services"
   :url "https://github.com/kgbvax/fdyn"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -41,7 +41,7 @@
       "genhash" ["run" "-m" "tinymasq.genhash"]
   }
 
-  :aot [tinymasq.core tinymasq.store tinymasq.genhash]
+  :aot [tinymasq.core tinymasq.store tinymasq.api tinymasq.config]
 
   :main tinymasq.core
 
