@@ -4,7 +4,7 @@
   :license {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [
                  [org.clojure/clojure "1.6.0"]
-                 [com.taoensso/carmine "2.12.1"]
+                 [com.taoensso/carmine "2.12.2"]
                  [dnsjava/dnsjava "2.1.7"]
                  [com.taoensso/timbre "3.3.1"]
                  [org.clojure/core.incubator "0.1.3"]
@@ -15,6 +15,8 @@
                  [ring/ring-jetty-adapter "1.4.0"]
                  [com.cemerick/friend "0.2.1"]
                  [ring "1.4.0"]
+                 [reagent "0.5.1"]
+                 [org.clojure/clojurescript "1.7.228"]
                  [compojure "1.4.0" :exclusions [ring/ring-core]]]
 
   :exclusions [org.clojure/clojure org.clojure/core.cache]
@@ -28,6 +30,7 @@
                                   [lein-tar "2.0.0"]
                                   [lein-tag "0.1.0"]
                                   [lein-ubersource "0.1.1"]
+                                  [lein-cljsbuild "1.0.3"]
 
                                   ]
                    }
