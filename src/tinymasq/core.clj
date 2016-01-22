@@ -1,19 +1,18 @@
-
 (ns tinymasq.core
   (:gen-class true)
   (:require
-   [clojure.string :refer (split)]
-   [ring.adapter.jetty :refer (run-jetty)]
-   [tinymasq.api :refer (app)]
-   [taoensso.timbre :as timbre :refer (refer-timbre)]
-   [clojure.core.async :refer (thread go >! >!! <!! <! alts! dropping-buffer go-loop chan)]
-   [clojure.java.io :refer (file)]
-   [tinymasq.config :refer (tiny-config ssl-conf log-conf)]
-   [tinymasq.store :refer (get-host)]
-   [environ.core :refer [env]])
+    [clojure.string :refer (split)]
+    [ring.adapter.jetty :refer (run-jetty)]
+    [tinymasq.api :refer (app)]
+    [taoensso.timbre :as timbre :refer (refer-timbre)]
+    [clojure.core.async :refer (thread go >! >!! <!! <! alts! dropping-buffer go-loop chan)]
+    [clojure.java.io :refer (file)]
+    [tinymasq.config :refer (tiny-config ssl-conf log-conf)]
+    [tinymasq.store :refer (get-host)]
+    [environ.core :refer [env]])
   (:import
-   (org.xbill.DNS Message Section Name Type DClass Record)
-   (java.net InetAddress DatagramPacket DatagramSocket)))
+    (org.xbill.DNS Message Section Name Type DClass Record)
+    (java.net InetAddress DatagramPacket DatagramSocket)))
 
 (refer-timbre)
 
@@ -55,34 +54,34 @@
 (defn accept-loop
   []
   (go
-   (while true
-     (let [pkt (packet (byte-array 1024))]
-       (.receive @udp-server pkt)
-       (>! lookups pkt)
-       ))))
+    (while true
+      (let [pkt (packet (byte-array 1024))]
+        (.receive @udp-server pkt)
+        (>! lookups pkt)
+        ))))
 
 (defn process-loop
   "Async processing of packets"
   []
   (go
-   (while true
-     (let [pkt (<! lookups) message (Message. (.getData pkt))
-           record (.getQuestion message) host (.toString (.getName record) false)
-           ip (get-host (normalized-host host))]
-       (when ip
-         (.addRecord message (record-of host (into-bytes ip)) Section/ANSWER))
-       (.setData pkt (.toWire message))
-       (>! answers [pkt host ip])
-       ))))
+    (while true
+      (let [pkt (<! lookups) message (Message. (.getData pkt))
+            record (.getQuestion message) host (.toString (.getName record) false)
+            ip (get-host (normalized-host host))]
+        (when ip
+          (.addRecord message (record-of host (into-bytes ip)) Section/ANSWER))
+        (.setData pkt (.toWire message))
+        (>! answers [pkt host ip])
+        ))))
 
 (defn reply-loop
   "Sends back reponses"
   []
   (go
-   (while true
-     (let [[pkt host ip] (<! answers)]
-       (.send @udp-server pkt)
-       (trace "Query result for" host "is" ip)))))
+    (while true
+      (let [[pkt host ip] (<! answers)]
+        (.send @udp-server pkt)
+        (trace "Query result for" host "is" ip)))))
 
 
 (defn setup-logging
@@ -97,10 +96,10 @@
   (setup-logging)
   (start-udp-server)
   (run-jetty (app)
-             {:port (tiny-config :http-port)
-              :host (tiny-config :bind-address)
+             {:port  (tiny-config :http-port)
+              :host  (tiny-config :bind-address)
               :join? false
-              :ssl? false})
+              :ssl?  false})
   (info "Tinymasq" (:tinymasq-version env) "is running")
   (reply-loop)
   (process-loop)
@@ -109,10 +108,10 @@
 (comment
   Tinymasq, Copyright 2013 Ronen Narkis, narkisr.com
   Licensed under the Apache License,
-  Version 2.0  (the "License") you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.)
+  Version 2.0 (the "License") you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at http: / / www.apache.org/licenses / LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. )
