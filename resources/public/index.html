@@ -14,11 +14,11 @@
               {{#if RecipeTracker.selectedRecipeController.selectedRecipe}}
                 {{#view RecipeTracker.RecipeDetailsView}}
                   {{#with RecipeTracker.selectedRecipeController.selectedRecipe}}
-                    <h2>{{title}}</h2>
+                    <h2>{{name}}</h2>
                     <h4>Directions:</h4>
                     <div class="recipe_display_details">
-                     <p>{{ingredients}}</p>
-                     <p>{{directions}}</p>
+                     <p>{{ip}}</p>
+                     <p>{{description}}</p>
                     </div>
                  {{/with}}
                 {{/view}}
@@ -36,8 +36,8 @@
           <div class="recipe_list span12">
             {{#each RecipeTracker.recipesController}}
               {{#view RecipeTracker.RecipeListingsView contentBinding="this"}}
-                 <ul class="recipe_listings">
-                    <li>{{title}}</li>
+                 <ul>
+                    <li>{{name}} {{ip}} {{description}}</li>
                   </ul>
               {{/view}}
             {{/each}}   

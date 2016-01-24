@@ -70,7 +70,7 @@
 
 (defn- emit-host [host]
   (let [details (rest (get-host-details host))]
-    (list* host details)))
+    (zipmap [:name :ip :description] (list* host details))))
 
 (defn list-hosts
   []

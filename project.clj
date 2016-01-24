@@ -25,13 +25,13 @@
   :profiles {
              :dev {
                    :dependencies [[midje "1.8.3"]]
-                   :plugins      [
-                                  [lein-set-version "0.3.0"]
+                   :plugins      [[lein-set-version "0.3.0"]
                                   [lein-midje "3.1.3"]
                                   [lein-ancient "0.5.5"]
                                   [lein-tar "2.0.0"]
                                   [lein-tag "0.1.0"]
-                                  [lein-ubersource "0.1.1"]]
+                                  [lein-ubersource "0.1.1"]
+                                  [lein-ring "0.9.7"]]
                    }
              }
 
@@ -39,7 +39,7 @@
                 :updates [{:path "src/tinymasq/core.clj" :search-regex #"\"\d+\.\d+\.\d+\""}
                           {:path "README.md" :no-snapshot true}]
                 }
-
+  :ring {:handler hello-world.core/handler}
 
   :aliases {
             "genhash" ["run" "-m" "tinymasq.genhash"]
