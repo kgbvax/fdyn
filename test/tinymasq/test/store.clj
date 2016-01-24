@@ -27,3 +27,4 @@
       (update-host "bob/secretsauce" "baz.blerk" "8.8.8.8") => "OK" ; subdomains are not permitted but this is the storage layer so we should not care.
       (del-host  "bob/secretsauce" "bar")
       (update-host "bob/secretsauce" "bar" "1.2.3.5") => "OK")
+

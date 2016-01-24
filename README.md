@@ -23,6 +23,7 @@ Prerequisites
 
 # Usage
 
+See [fdyn Protocol](https://github.com/kgbvax/fdyn/blob/master/PROTOCOL.md) for a description of the update protocol  
 
 DNS lookup:
 

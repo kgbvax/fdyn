@@ -1,11 +1,12 @@
 (ns tinymasq.store
   "host lookup"
   (:require
-   [taoensso.timbre :as timbre :refer (refer-timbre)]
-   [clojure.core.strint :refer (<<)]
-   [taoensso.carmine :as car :refer  (wcar)]
-   [tinymasq.config :refer (tiny-config)]
-   [clojure.edn :as edn]))
+    [taoensso.timbre :as timbre :refer (refer-timbre)]
+    [clojure.core.strint :refer (<<)]
+    [taoensso.carmine :as car :refer (wcar)]
+    [tinymasq.config :refer (tiny-config)]
+    [clojure.pprint :refer (pprint)]
+    [clojure.edn :as edn]))
 
 
 (refer-timbre)
@@ -25,13 +26,13 @@
 (defn- get-host-details
   "get host details,  host name"
   [host]
-    (edn/read-string
-     (wcar* (car/get host))))
+  (edn/read-string
+    (wcar* (car/get host))))
 
 (defn get-host
   "get host ip, given name and auth-token"
   [host]
-  (let [[rec-auth rec-ip rec-description]  (get-host-details host)]
+  (let [[rec-auth rec-ip rec-description] (get-host-details host)]
     rec-ip))
 
 
@@ -56,7 +57,7 @@
   {:post [(assert-op "add" host %)]}
   (if (access-permitted? auth host)
     (wcar* (car/set host
-                    (prn-str (list auth ip description))))
+                    (prn-str (list auth ip description ))))
     nil))
 
 (defn del-host
@@ -67,8 +68,14 @@
     nil))
 
 
+(defn- emit-host [host]
+  (let [details (rest (get-host-details host))]
+    (zipmap [:name :ip :description] (list* host details))))
+
 (defn list-hosts
   []
   "list of known hosts"
-  nil)
+  (let [allkeys (wcar* (car/keys "*"))]
+    (map (fn [host]
+           (emit-host host))  allkeys)))
 
